@@ -118,6 +118,19 @@ button:hover { background: #22262e; }
   color: var(--muted);
 }
 .price { color: var(--accent2); font-weight: 600; }
+.plot-toggle {
+  background: none; border: none; color: var(--accent); font: inherit;
+  font-size: .8rem; cursor: pointer; padding: 0; margin-top: .5rem;
+}
+.plot-toggle:hover { text-decoration: underline; }
+.plot {
+  display: none;
+  margin-top: .5rem;
+  font-size: .83rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+.plot.open { display: block; }
 .links { margin-top: .6rem; }
 .links a {
   font-size: .8rem;
@@ -169,7 +182,7 @@ footer {
 
 <main class="grid" id="grid"></main>
 
-<footer>Film info and poster artwork sourced from criterion.com. Where-to-watch via JustWatch.</footer>
+<footer>Film info, posters, and synopses sourced from criterion.com. Prices are live Amazon listings (fluctuate daily). Where-to-watch via JustWatch.</footer>
 
 <script>
 const films = [
@@ -324,6 +337,7 @@ function render() {
         <div class="title">#${f.rank} ${f.title}</div>
         <div class="meta"><span>${f.year}</span><span>${f.director}</span><span>${f.country}</span><span>${f.runtime} min</span>${f.price != null ? `<span class="price">$${f.price.toFixed(2)}${f.fmt ? ' ' + f.fmt : ''}</span>` : ''}</div>
         <div class="tags"><span class="tag">${f.genre}</span></div>
+        ${f.plot ? `<button class="plot-toggle" data-rank="${f.rank}">Plot ▾</button><p class="plot">${f.plot}</p>` : ''}
         <div class="links">
           <a href="${f.criterion || searchLink(f.title)}" target="_blank" rel="noopener">Criterion</a>
           <a href="${justwatchLink(f.title)}" target="_blank" rel="noopener">Where to watch</a>
@@ -345,6 +359,14 @@ function render() {
       if (w.has(rank)) w.delete(rank); else w.add(rank);
       setWatched(w);
       render();
+    });
+  });
+
+  document.querySelectorAll('.plot-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const p = btn.nextElementSibling;
+      const open = p.classList.toggle('open');
+      btn.textContent = open ? 'Plot ▴' : 'Plot ▾';
     });
   });
 }
